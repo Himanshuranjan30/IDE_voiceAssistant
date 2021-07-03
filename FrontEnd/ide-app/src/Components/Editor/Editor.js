@@ -92,7 +92,7 @@ int main() {
                         </button>
                     </div>
                     <div>
-                    <button className={classes.submit} onClick={()=>recognition.start()}>Voice Assistent</button>
+                    <button className={classes.assist} onClick={()=>recognition.start()}>Voice Assist</button>
                     </div>
                     <div className={classes.toogle}>
                         <div
