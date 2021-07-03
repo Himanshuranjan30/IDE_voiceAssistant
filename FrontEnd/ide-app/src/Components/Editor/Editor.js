@@ -7,10 +7,36 @@ import classes from "./editor.module.css";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import "codemirror/theme/dracula.css";
+
 require("codemirror/mode/clike/clike");
 require("codemirror/mode/python/python");
+axios.defaults.headers.post['crossorigin'] = 'true'
+axios.defaults.headers.post["Access-Control-Allow-Origin"]="https://api.jdoodle.com/v1/execute"
+const textConverted=" ";
+const speechRecognition = window.speechRecognition || window.webkitSpeechRecognition;
+const recognition=new speechRecognition()
+recognition.onstart=()=>
+{
+    console.log("speak now")
+}
+// recognition.onresult=(event)=>{
+//     const current=event.resultIndex;
+//     const transcript=event.results[current][0].transcript;
+//     textConverted=transcript
+// }
+
 
 class Editor extends Component {
+    
+    componentDidMount(){
+
+        recognition.onresult=(event)=>{
+            const current=event.resultIndex;
+            const transcript=event.results[current][0].transcript;
+            this.setState({value:this.state.value+"\n"+transcript})
+        }
+    }
+    
     state = {
         lang: "cpp17",
         mode: "clike",
@@ -25,15 +51,19 @@ int main() {
 }
         `,
     };
+    url="https://cors-anywhere.herokuapp.com/https://api.jdoodle.com/v1/execute"
+   
     submitHandler = () => {
         this.props.submitting();
         const x = {
-            code: this.state.value,
-            input: this.props.input,
-            lang: this.state.lang,
+            script: this.state.value+textConverted,
+            stdin: this.props.input,
+            language: this.state.lang,
+            clientId: "604a0003cf077e76bb6eab64eb865506",
+            clientSecret: "b43bb11a8850beea6da242a1b02f7fb1d605459b14b804499bd21bcf1691ae57"
         };
         axios
-            .post("/", x)
+            .post(this.url, x)
             .then((response) => {
                 console.log(response.data.output);
                 this.props.outputChange(response.data.output);
@@ -60,6 +90,9 @@ int main() {
                         <button className={classes.submit} onClick={() => this.submitHandler()}>
                             Run
                         </button>
+                    </div>
+                    <div>
+                    <button className={classes.submit} onClick={()=>recognition.start()}>Voice Assistent</button>
                     </div>
                     <div className={classes.toogle}>
                         <div
@@ -103,6 +136,7 @@ int main() {
                     autoCursor={true}
                     onChange={(editor, data, value) => {}}
                 />
+                
             </>
         );
     }
