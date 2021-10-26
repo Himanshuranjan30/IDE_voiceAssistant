@@ -1,4 +1,3 @@
-#frontend edited backend
 import speech_recognition as sr
 #initalises the recognizer
 r1 = sr.Recognizer()
